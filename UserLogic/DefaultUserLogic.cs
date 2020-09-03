@@ -90,7 +90,7 @@ namespace SSTUScheduleBot.UserLogic
             if (type.Value == null)
             {
                 TelegramInterface.Instance!.Send(user,
-                    "Неизвестная комманда",
+                    "Неизвестная команда",
                     _getScheduleTypes.Values.ToArray());
                 return;
             }
