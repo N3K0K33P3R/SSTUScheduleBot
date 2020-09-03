@@ -1,6 +1,6 @@
 ﻿namespace SSTUScheduleBot.Models
 {
-    public enum GetScheduleTypes
+    public enum ActionTypes
     {
         Next,
         Today,

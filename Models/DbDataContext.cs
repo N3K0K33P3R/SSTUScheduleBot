@@ -8,7 +8,13 @@ namespace SSTUScheduleBot.Models
 {
     public partial class DbDataContext : DbContext
     {
-        private readonly string? connectionString;
+        private readonly string connectionString;
+
+        public DbDataContext(Config config)
+        {
+            connectionString = config.ConnectionString;
+        }
+
         public DbDataContext()
         {
         }
@@ -18,23 +24,18 @@ namespace SSTUScheduleBot.Models
         {
         }
 
-        public DbDataContext(Config config)
-        {
-            connectionString = config.ConnectionString;
-        }
-
         public virtual DbSet<ConnectionType> ConnectionTypes { get; set; }
-        public virtual DbSet<Group> Groups { get; set; }
-        public virtual DbSet<Schedule> Schedules { get; set; }
+        public virtual DbSet<Group>          Groups          { get; set; }
+        public virtual DbSet<Request>        Requests        { get; set; }
+        public virtual DbSet<Schedule>       Schedules       { get; set; }
         public virtual DbSet<SubGroupLesson> SubGroupLessons { get; set; }
-        public virtual DbSet<User> Users { get; set; }
+        public virtual DbSet<User>           Users           { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
             {
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-                optionsBuilder.UseSqlServer("Server=.\\SQL1;Database=sstu;Trusted_Connection=True;");
+                optionsBuilder.UseSqlServer(connectionString);
             }
         }
 
@@ -71,6 +72,27 @@ namespace SSTUScheduleBot.Models
                     .HasMaxLength(15)
                     .HasColumnName("name")
                     .IsFixedLength(true);
+            });
+
+            modelBuilder.Entity<Request>(entity =>
+            {
+                entity.HasAnnotation("Relational:IsTableExcludedFromMigrations", false);
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.Datetime)
+                    .HasColumnType("datetime")
+                    .HasColumnName("datetime")
+                    .HasAnnotation("Relational:ColumnType", "datetime");
+
+                entity.Property(e => e.Request1).HasColumnName("request");
+
+                entity.Property(e => e.UserId).HasColumnName("user_id");
+
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.Requests)
+                    .HasForeignKey(x => x.UserId)
+                    .HasConstraintName("FK_Requests_Users");
             });
 
             modelBuilder.Entity<Schedule>(entity =>

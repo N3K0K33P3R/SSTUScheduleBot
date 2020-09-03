@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using SSTUScheduleBot.Models;
 using SSTUScheduleBot.Schedule;
 using Group = SSTUScheduleBot.Schedule.Group;
@@ -20,5 +21,6 @@ namespace SSTUScheduleBot.Interface
         List<Models.Schedule> GetYesterdaySchedule(User user);
         Models.Schedule?      GetNextLesson(User        user);
         void                  ParseGroupSchedule(int    id, Dictionary<WeekTypes, List<Lesson>> groupSchedule);
+        void LogRequest(User user, DateTime dateTime, ActionTypes actionType);
     }
 }

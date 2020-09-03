@@ -12,13 +12,13 @@ namespace SSTUScheduleBot.UserLogic
     {
         private readonly IDbWorker _dbWorker;
 
-        private readonly Dictionary<GetScheduleTypes, string> _getScheduleTypes =
-            new Dictionary<GetScheduleTypes, string>()
+        private readonly Dictionary<ActionTypes, string> _getScheduleTypes =
+            new Dictionary<ActionTypes, string>()
             {
-                {GetScheduleTypes.Next, "Следующая пара"},
-                {GetScheduleTypes.Today, "Сегодня"},
-                {GetScheduleTypes.Tomorrow, "Завтра"},
-                {GetScheduleTypes.Yesterday, "Вчера"}
+                {ActionTypes.Next, "Следующая пара"},
+                {ActionTypes.Today, "Сегодня"},
+                {ActionTypes.Tomorrow, "Завтра"},
+                {ActionTypes.Yesterday, "Вчера"}
             };
 
         public List<TimeItem> Schedule { get; set; }
@@ -97,7 +97,7 @@ namespace SSTUScheduleBot.UserLogic
 
             switch (type.Key)
             {
-                case GetScheduleTypes.Next:
+                case ActionTypes.Next:
                     var course = _dbWorker.GetNextLesson(user);
 
                     if (course == null)
@@ -110,24 +110,26 @@ namespace SSTUScheduleBot.UserLogic
                             _getScheduleTypes.Values.ToArray());
 
                     break;
-                case GetScheduleTypes.Today:
+                case ActionTypes.Today:
                     SendScheduleFromFunc(_dbWorker.GetTodaySchedule, user);
                     break;
-                case GetScheduleTypes.Tomorrow:
+                case ActionTypes.Tomorrow:
                     SendScheduleFromFunc(_dbWorker.GetTomorrowSchedule, user);
                     break;
-                case GetScheduleTypes.Week:
+                case ActionTypes.Week:
                     SendScheduleFromFunc(_dbWorker.GetWeekSchedule, user);
                     break;
-                case GetScheduleTypes.All:
+                case ActionTypes.All:
                     SendScheduleFromFunc(_dbWorker.GetAllSchedule, user);
                     break;
-                case GetScheduleTypes.Yesterday:
+                case ActionTypes.Yesterday:
                     SendScheduleFromFunc(_dbWorker.GetYesterdaySchedule, user);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+            
+            _dbWorker.LogRequest(user, DateTime.Now, type.Key);
         }
 
         private void SendZeroLessonsMessage(User user)

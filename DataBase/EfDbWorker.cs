@@ -202,6 +202,18 @@ namespace SSTUScheduleBot.DataBase
             _dataContext.SaveChanges();
         }
 
+        public void LogRequest(User user, DateTime dateTime, ActionTypes actionType)
+        {
+            _dataContext.Requests.Add(new Request()
+            {
+                Datetime = dateTime,
+                User = user,
+                Request1 = (int)actionType
+            });
+
+            _dataContext.SaveChanges();
+        }
+
         public void Save()
         {
             _dataContext.SaveChanges();
